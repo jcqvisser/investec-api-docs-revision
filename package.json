@@ -1,0 +1,20 @@
+{
+  "name": "investec-api-docs-revision",
+  "version": "1.0.0",
+  "description": "More detailed Investec API docs - with extra information found from usage.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jcqvisser/investec-api-docs-revision.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jcqvisser/investec-api-docs-revision/issues"
+  },
+  "homepage": "https://github.com/jcqvisser/investec-api-docs-revision#readme",
+  "dependencies": {}
+}
