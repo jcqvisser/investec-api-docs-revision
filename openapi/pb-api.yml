@@ -1,0 +1,245 @@
+openapi: 3.0.0
+info:
+  description: ""
+  version: "1.0.0"
+  title: "Investec API Docs Revision"
+servers:
+  - url: "https://openapi.investec.com"
+    description: Production server
+paths:
+  /za/pb/v1/accounts:
+    get:
+      summary: "Get all accounts associated with a user"
+      operationId: "getAccounts"
+      responses:
+        "200":
+          description: "Retrieved all accounts"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PBAccountsResponse"
+  /za/pb/v1/accounts/{accountId}/balance:
+    get:
+      summary: "Get the balance of a specified account"
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      operationId: "getAccount"
+      responses:
+        "200":
+          description: "Retrieved Account Balance"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PBAccountBalanceResponse"
+  /za/pb/v1/accounts/{accountId}/transactions:
+    get:
+      summary: "Get the balance of a specified account"
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: fromDate
+          required: false
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: toDate
+          required: false
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: number
+      operationId: "getAccount"
+      responses:
+        "200":
+          description: "Retrieved Account Balance"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PBAccountTransactionsResponse"
+
+components:
+  schemas:
+    PBAccountsResponse:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            totalPages:
+              type: integer
+              minimum: 0
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+        data:
+          type: object
+          properties:
+            accounts:
+              type: array
+              items:
+                $ref: "#/components/schemas/PBAccount"
+    PBAccount:
+      type: object
+      properties:
+        accountId:
+          type: string
+          minLength: 1
+        accountNumber:
+          type: string
+          minLength: 1
+        accountName:
+          type: string
+          minLength: 1
+        referenceName:
+          type: string
+          minLength: 1
+        productName:
+          type: string
+          minLength: 1
+    PBAccountBalanceResponse:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            totalPages:
+              type: integer
+              minimum: 0
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+        data:
+          $ref: "#/components/schemas/PBAccountBalance"
+    PBAccountBalance:
+      type: object
+      properties:
+        accountId:
+          type: string
+          minLength: 1
+        currency:
+          type: string
+          minLength: 1
+        currentBalance:
+          type: number
+        availableBalance:
+          type: number
+    PBAccountTransactionsResponse:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            totalPages:
+              type: integer
+              minimum: 0
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+        data:
+          type: object
+          properties:
+            transactions:
+              type: array
+              items:
+                $ref: "#/components/schemas/PBTransaction"
+    PBTransaction:
+      type: object
+      required:
+        - accountId
+        - type
+        - transactionType
+        - status
+        - description
+        - cardNumber
+        - postedOrder
+        - postingDate
+        - valueDate
+        - actionDate
+        - transactionDate
+        - amount
+        - runningBalance
+      properties:
+        accountId:
+          type: string
+          minLength: 1
+          description: "The id for the account against which this transaction is registered."
+        type:
+          type: string
+          enum: ["DEBIT", "CREDIT"]
+          description: "A transaction's `type`, eg `'DEBIT'` or `'CREDIT'`. Not to be confused with a transaction's `transactionType`, which can only be "
+        transactionType:
+          type: string
+          enum:
+            - "ATMWithdrawals"
+            - "BudgetInstalments"
+            - "CardPurchases"
+            - "DebitOrders"
+            - "Deposits"
+            - "FasterPay"
+            - "FeesAndInterest"
+            - "JourneyCardPurchases"
+            - "OnlineBankingPayments"
+            - "OverTheCounterTransactions"
+            - "SendCash"
+            - "VASTransactions"
+          description: "A transaction's `transactionType`, eg `'Deposits'` or `'ATMWithdrawals'`. Not to be confused with a transaction's `type`, which can only be `'DEBIT'` or `'CREDIT'`"
+        status:
+          type: string
+          enum: ["POSTED"]
+        description:
+          type: string
+          minLength: 1
+          description: 'A payer provided "reference" associated with the transaction'
+        cardNumber:
+          type: string
+          minLength: 0
+          description: "The number of the card that the transaction was made from. This is never null, but it can be an empty string if a transaction was not made from a card."
+        postedOrder:
+          type: number
+          minimum: 0
+          description: 'The order in which a transaction appeared. This will be 0 until a transaction has been "cleared".'
+        postingDate:
+          type: string
+          format: date
+          nullable: true
+          description: 'This will be `null` until a transaction is "cleared".'
+        valueDate:
+          type: string
+          format: date
+          nullable: true
+          description: 'This will be `null` until a transaction is "cleared".'
+        actionDate:
+          type: string
+          format: date
+          "description": "?"
+        transactionDate:
+          type: string
+          format: date
+          description: "The date on which the transaction took place"
+        amount:
+          type: number
+          description: "The value of the transaction"
+        runningBalance:
+          type: number
+          description: 'The running-balance for the account against which this transaction is made. This will be 0 until a transaction is "cleared". That does not mean the account is empty'
